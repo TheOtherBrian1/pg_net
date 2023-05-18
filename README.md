@@ -5,7 +5,7 @@ The unexpected test failures in my recent [pull requests](https://github.com/sup
 | ------- | ------- | -------- |
 | SUCCESS | ok      | (,,)     |
 ```
-The expected return should include `<status_code>, <headers>, <body>` in the response field. One fix would be to adjust the [worker.c](https://github.com/supabase/pg_net/blob/master/src/worker.c) to yield an 'ERROR' code upon timeouts, but ongoing discussions around a potential breaking update in [issue 74](https://github.com/supabase/pg_net/issues/74) and [issue 62](https://github.com/supabase/pg_net/issues/62) suggest caution.
+When the tests encounter a SUCCESS status, they anticipate the response field to be populated with the tuple `(<status_code>, <headers>, <body>)`. However, because timed-out responses are mislabled as successful, this field remains unpopulated, leading to discrepancies. One fix would be to adjust the [worker.c](https://github.com/supabase/pg_net/blob/master/src/worker.c) to yield an 'ERROR' code upon timeouts, but ongoing discussions around a potential breaking update in [issue 74](https://github.com/supabase/pg_net/issues/74) and [issue 62](https://github.com/supabase/pg_net/issues/62) suggest caution.
 
 While looking for an alternative solution, I ran two GET requests using the [Postman Echo API](https://learning.postman.com/docs/developer/echo-api/):
 
@@ -95,5 +95,3 @@ begin
 end;
 $$;
 ```
-
-While I am discussing the net._http_collect_response function, I would like to know if the comment stating it is PRIVATE is supposed to be there. I have a feeling it should be removed.
